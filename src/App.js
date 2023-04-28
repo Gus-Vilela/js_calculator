@@ -1,5 +1,6 @@
 import './App.css';
 import { useState } from 'react';
+import * as math from 'mathjs';
 
 function App() {
 	
@@ -12,58 +13,53 @@ function App() {
 			{id: 13, name: "multiply", value: '*'},{id: 14, name: "divide", value: '/'}])
 
 	const[formula, setFormula] = useState({
-		previusPressed: 0,
+		previusPressed: "0",
 		formula: '',
-		previusNumber: 0,
 		});
 
-	const[display, setDisplay] = useState(0);
+	const[display, setDisplay] = useState('0');
 
 	const numberPressed = (e) => {
-			setDisplay(p => {if(p === 0 && e.target.value==0){
-				return p;
-			}else if(p === 0 && e.target.value != 0){
-				return e.target.value;
+			if(formula.previusPressed === '='){
+				setFormula({previusPressed: e.target.value, formula: ''});
+				setDisplay(e.target.value);
 			}else{
-				return p + e.target.value;
-			}
-	})};
-
-	const operatorPressed = (e) => {
-		console.log(e.target.value)
-		switch(e.target.value){
-			case '+':	
-				setFormula(p => {return {...p, previusPressed: '+', formula: p.formula + display + e.target.value, previusNumber: display
-				}});
-				break;
-			case '-':
-				setFormula(p => {return {...p, previusPressed: '-', formula: p.formula + display + e.target.value, previusNumber: display
-				}});
-				break;
-			case '*':
-				setFormula(p => {return {...p, previusPressed: '*', formula: p.formula + display + e.target.value, previusNumber: display
-				}});
-				break;
-			case '/':
-				setFormula(p => {return {...p, previusPressed: '/', formula: p.formula + display + e.target.value, previusNumber: display
-				}});
-				break;
-			default:
-				break;
-		}
-		setDisplay(0);
+				setDisplay(p => {if(p === '0' && e.target.value==='0'){
+					return p;
+				}else if(p === '0' && e.target.value !== '0'){
+					return e.target.value;
+				}else{
+					return p + e.target.value;
+				}
+			})};
 	}
 
-		const ac = () => {
-			setDisplay(0);
-			setFormula({previusPressed: 0, formula: '', previusNumber: 0})
+	const operatorPressed = (e) => {
+		if(formula.previusPressed === '='){
+			setFormula({previusPressed: e.target.value, formula: display + e.target.value});
+		}else{
+		setFormula(p => {return {...p, previusPressed: e.target.value, formula: p.formula + display + e.target.value}});	
+		}
+		setDisplay("0");
+	}
+
+		const clear = () => {
+			setDisplay("0");
+			setFormula({previusPressed: "0", formula: ''})
 		}
 
-	
-	return (
-		
-		<div className='Calc'>
+		const calcResult = (e) => {
+			if(formula.previusPressed === '='){
+				return;
+			}else{
+				let result = math.evaluate(formula.formula + display);
+				setDisplay(result);
+				setFormula({...formula, formula: formula.formula + display + e.target.value, previusPressed: e.target.value});
+			}
+		}
 
+	return (
+		<div className='Calc'>
 			<div className='Visor'>
 				<div className='Calc-Formula'>
 						{formula.formula}
@@ -73,12 +69,12 @@ function App() {
 				</div>
 			</div>
 			<div className='Calc-Keypad'>
-				<button id="clear" className='ac' onClick={ac}>AC</button>
+				<button id="clear" className='ac' onClick={clear}>AC</button>
 
 				<div className='Calc-Keypad-Numbers'>
 					{data.map((item) => { return <button key={item.id} id={item.name} value={item.value} onClick={numberPressed}>{item.value}</button> })}
 					<button id='decimal'>.</button>
-					<button id='equals'>=</button>
+					<button id='equals' onClick={calcResult} value='='>=</button>
 				</div>
 				
 				<div className='Calc-Keypad-Operators'>
