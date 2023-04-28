@@ -114,7 +114,8 @@ function App() {
 				</div>
 				
 				<div className='Calc-Keypad-Operators'>
-					{operators.map((item) => { return <button className='operator' key={item.id} id={item.name} value={item.value} onClick={operatorPressed}>{item.value}</button> })}
+					{operators.map((item) => { return <button className='operator' key={item.id} id={item.name} value={item.value} 
+					onClick={operatorPressed}>{item.value}</button> })}
 				</div>
 	
 			</div>
